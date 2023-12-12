@@ -1,10 +1,35 @@
 // -- GLOBAL --
 const MAX_CHARS = 150;
+const BASE_API_URL = 'https://bytegrad.com/course-assets/js/1/api';
 
 const textareaEl = document.querySelector('.form__textarea');
 const counterEl = document.querySelector('.counter');
 const formEl = document.querySelector('.form');
 const feedbacksListEl = document.querySelector('.feedbacks');
+const spinnerEl = document.querySelector('.spinner');
+
+const renderFeedbackItems = feedbackItem => {
+    const feedbackItemHTML = `
+        <li class="feedback">
+            <button class="upvote">
+                <i class="fa-solid fa-caret-up upvote__icon"></i>
+                <span class="upvote__count">${feedbackItem.upvoteCount}</span>
+            </button>
+            <section class="feedback__badge">
+                <p class="feedback__letter">${feedbackItem.badgeLetter}</p>
+            </section> 
+            <div class="feedback__content">
+                <p class="feedback__company">${feedbackItem.company}</p>
+                <p class="feedback__text">${feedbackItem.text}</p>
+            </div>
+            <p class="feedback__date">${feedbackItem.daysAgo === 0 ? 'NEW' : `${feedbackItem.daysAgo}d`}</p>
+        </li>
+    `;
+
+    feedbacksListEl.insertAdjacentHTML('beforeend', feedbackItemHTML);
+}
+
+
 
 
 // -- COUNTER COMPONENT --
@@ -31,7 +56,7 @@ const submitHandler = (e) => {
     } else {
         showVisualINdicator('invalid');
 
-        //focus textarea
+        // focus textarea
         textareaEl.focus();
 
         return;
@@ -43,30 +68,62 @@ const submitHandler = (e) => {
     const upvoteCount = 0;
     const daysAgo = 0;
 
-    const feedbackItemHTML = `
-        <li class="feedback">
-            <button class="upvote">
-                <i class="fa-solid fa-caret-up upvote__icon"></i>
-                <span class="upvote__count">${upvoteCount}</span>
-            </button>
-            <section class="feedback__badge">
-                <p class="feedback__letter">${badgeLetter}</p>
-            </section>
-            <div class="feedback__content">
-                <p class="feedback__company">${company}</p>
-                <p class="feedback__text">${text}</p>
-            </div>
-            <p class="feedback__date">${daysAgo === 0 ? 'NEW' : `${daysAgo}d`}</p>
-        </li>
-    `;
+    // render feedback item
+    const feedbackItem = {
+        upvoteCount,
+        company,
+        badgeLetter,
+        daysAgo,
+        text
+    }
+    renderFeedbackItems(feedbackItem);
 
-    feedbacksListEl.insertAdjacentHTML('beforeend', feedbackItemHTML)
+    // send feedback item to server
+    fetch(`${BASE_API_URL}/feedbacks`, {
+        method: 'POST',
+        body: JSON.stringify(feedbackItem),
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then(responce => {
+        if(!responce.ok) {
+            console.log('Wrong');
+            return;
+        } 
 
+        console.log('sus');
+    }).catch(error => console.log(error))
+    
+    // clear textarea
     textareaEl.value = '';
+
+    // blur submit button
     textareaEl.blur();
+
+    // reset counter
     counterEl.textContent = MAX_CHARS;
+};
+
+formEl.addEventListener('submit', submitHandler);
+
+// -- FEEDBACK LIST COMPONENT --
+
+const clickHandler = () => {
+    console.log('click');
 }
+feedbacksListEl.addEventListener('click', clickHandler)
 
+fetch(`${BASE_API_URL}/feedbacks`)
+    .then(responce => responce.json())
+    .then(data => {
 
-
-formEl.addEventListener('submit', submitHandler)
+    // remove spinner
+    spinnerEl.remove(); 
+    
+    // insert new feedback item in list
+    data.feedbacks.map(feedbackItem => renderFeedbackItems(feedbackItem));
+})
+.catch(error => {
+    feedbacksListEl.textContent = `Failed to fetch feedback items. Error message: ${error.message}`;
+});
