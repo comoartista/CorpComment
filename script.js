@@ -109,8 +109,31 @@ formEl.addEventListener('submit', submitHandler);
 
 // -- FEEDBACK LIST COMPONENT --
 
-const clickHandler = () => {
-    console.log('click');
+const clickHandler = (e) => {
+    // get clickedEl  HTML-element
+    const clickedEl = e.target
+
+    // determine if user instended to upvote or expand
+    const upvoteIntention = clickedEl.className.includes('upvote');
+
+    // run the appropriate logic
+    if (upvoteIntention) {
+        // get the closest upvote button
+        const upvoteBtnEl = clickedEl.closest('.upvote');
+
+        // disable upvote button (prevent double-clicks, spam)
+        upvoteBtnEl.disabled = true;
+
+        // select the upvote count element within the upvote button
+        const upvoteCountEl = upvoteBtnEl.querySelector('.upvote__count');
+
+        // get currently displayed upvote count as number (+)
+        let upvoteCount = +upvoteCountEl.textContent
+        upvoteCountEl.textContent = ++upvoteCount;
+    } else {
+        // expand the clicked feedback item
+        clickedEl.closest('.feedback').classList.toggle('feedback--expand');
+    }
 }
 feedbacksListEl.addEventListener('click', clickHandler)
 
