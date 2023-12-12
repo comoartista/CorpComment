@@ -527,38 +527,7 @@ html, body{
     background-color: rgba(255, 255, 255, 0.1); 
 }
 
-/* FOOTER */
-.footer {
-    position: absolute;
-    transform: rotate(-90deg);
-    left: -225px;
-    bottom: 174px;
-}
 
-/* COPYRIGHT */
-.copyright {
-    color: #A6ADB5;
-    font-size: 11px;
-}
-
-.copyright *::selection {
-    background-color: rgba(255, 255, 255, 0.1); 
-}
-
-.copyright__text {
-    opacity: 0.4;
-}
-
-.copyright__link {
-    text-decoration: underline;
-}
-
-.copyright__icon {
-    font-size: 10px;
-    opacity: 0.5;
-    margin-right: 4px;
-    margin-left: 2px;
-}
 
 /* SPINNER */
 .spinner {
@@ -576,7 +545,6 @@ html, body{
     animation: spinner 1s infinite linear;
 }
 
-
 /* MEDIA QUERIES */
 @media (max-height: 925px) {
     .body {
@@ -592,15 +560,6 @@ html, body{
 
     .hashtags {
         display: none;
-    }
-
-    .footer {
-        transform: initial;
-        position: relative;
-        left: initial;
-        bottom: initial;
-        text-align: center;
-        margin-top: 20px;
     }
 }
 
@@ -666,9 +625,5 @@ html, body{
     
     .feedback__date {
         display: none;
-    }
-    
-    .footer {
-        padding: 0 15px;
     }
 }
